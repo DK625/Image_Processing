@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Processing</title>
+    <!-- <script defer src="../image_processing.js"></script> -->
+    <!-- <script defer src="../image_processing.py"></script> -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+</head>
+
+<body>
+    <h1>Image Processing</h1>
+
+    <label for="inputImage">Select an Image:</label>
+    <input type="file" id="inputImage" accept="image/*">
+
+    <label for="selectAlgorithm">Select an Algorithm:</label>
+    <select id="selectAlgorithm">
+        <option value="negative">Negative Transformation</option>
+        <option value="threshold">Thresholding</option>
+        <option value="logarithm">Logarithmic Transformation</option>
+        <option value="exponential">Exponential Transformation</option>
+        <option value="histogramEqualization">Histogram Equalization</option>
+        <option value="weightedAverageFilter">Weighted Average Filter</option>
+        <option value="medianFilter">Median Filter</option>
+        <option value="robertsOperator">Roberts Operator</option>
+        <option value="sobelOperator">Sobel Operator</option>
+        <option value="prewittOperator">Prewitt Operator</option>
+        <option value="laplacianOperator">Laplacian Operator</option>
+        <option value="cannyEdgeDetection">Canny Edge Detection</option>
+        <option value="otsuThreshold">Otsu's Thresholding</option>
+        <option value="dilation">Dilation</option>
+        <option value="erosion">Erosion</option>
+        <option value="closing">Closing</option>
+        <option value="opening">Opening</option>
+    </select>
+
+    <button onclick="processImage()">Process Image</button>
+
+    <h2>Output Image:</h2>
+    <canvas id="outputCanvas" width="500" height="500"></canvas>
+
+    <script>
+        function processImage() {
+            // Lấy đường dẫn đến file và thuật toán từ trang web
+            var inputImage = document.getElementById('inputImage');
+            var selectedAlgorithm = document.getElementById('selectAlgorithm').value;
+
+            var file = inputImage.files[0];
+
+            if (file) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    var inputImagePath = e.target.result;  // Đường dẫn tệp đã được đọc
+                    sendImageToServer(inputImagePath, selectedAlgorithm);
+                };
+                reader.readAsDataURL(file);
+            }
+
+        }
+
+        function sendImageToServer(inputImagePath, selectedAlgorithm) {
+            var formData = new FormData();
+            formData.append('inputImagePath', inputImagePath);
+            formData.append('algorithm', selectedAlgorithm);
+
+            // Gửi yêu cầu đến endpoint /process_image bằng Ajax
+            $.ajax({
+                type: 'POST',
+                url: '/process_image',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    console.log(response);
+                    // Hiển thị ảnh sau khi xử lý
+                    var outputCanvas = document.getElementById('outputCanvas');
+                    var ctx = outputCanvas.getContext('2d');
+
+                    // Hiển thị ảnh trên giao diện
+
+                    // // Tạo một thẻ img mới
+                    // var processedImage = new Image();
+
+                    // // Thiết lập nguồn ảnh từ dữ liệu nhận được từ API
+                    // processedImage.src = 'data:image/jpeg;base64,' + response;
+
+                    // // Đợi cho ảnh tải xong trước khi hiển thị nó
+                    // processedImage.onload = function () {
+                    //     // Vẽ ảnh lên canvas hoặc thêm ảnh vào một thẻ khác trong trang HTML
+                    //     ctx.drawImage(processedImage, 0, 0, outputCanvas.width, outputCanvas.height);
+                    // };
+                },
+                error: function (error) {
+                    console.error(error);
+                }
+            });
+        }
+
+    </script>
+
+
+</body>
+
+</html>
